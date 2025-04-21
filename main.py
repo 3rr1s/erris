@@ -192,12 +192,32 @@ def main():
             system.view_patients()
         elif choice == '4':
             sorted_patients = system.bubble_sort()
+            print("\nSorted names:")
             for patient in sorted_patients:
-                print(patient)
+                if sort_choice == '1':
+                    print(f"ID: {patient.id}")
+                elif sort_choice == '2':
+                    print(f"Name: {patient.name}")
+                elif sort_choice == '3':
+                    print(f"Age: {patient.age}")
+                elif sort_choice == '4':
+                    print(f"Score: {patient.score}")
+                else:
+                    print(patient)
         elif choice == '5':
             sorted_patients = system.merge_sort()
+            print("\nSorted names:")
             for patient in sorted_patients:
-                print(patient)
+                if sort_choice == '1':
+                    print(f"ID: {patient.id}")
+                elif sort_choice == '2':
+                    print(f"Name: {patient.name}")
+                elif sort_choice == '3':
+                    print(f"Age: {patient.age}")
+                elif sort_choice == '4':
+                    print(f"Score: {patient.score}")
+                else:
+                    print(patient)
         elif choice == '6':
             system.search_by_id()
         elif choice == '7':
