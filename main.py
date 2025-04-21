@@ -191,8 +191,14 @@ def main():
         elif choice == '3':
             system.view_patients()
         elif choice == '4':
+            print("\nSorting options:")
+            print("1. Sort by ID")
+            print("2. Sort by Name")
+            print("3. Sort by Age")
+            print("4. Sort by Score")
+            sort_choice = input("Enter sorting choice (1-4): ")
             sorted_patients = system.bubble_sort()
-            print("\nSorted names:")
+            print("\nSorted list:")
             for patient in sorted_patients:
                 if sort_choice == '1':
                     print(f"ID: {patient.id}")
@@ -205,8 +211,14 @@ def main():
                 else:
                     print(patient)
         elif choice == '5':
+            print("\nSorting options:")
+            print("1. Sort by ID")
+            print("2. Sort by Name")
+            print("3. Sort by Age")
+            print("4. Sort by Score")
+            sort_choice = input("Enter sorting choice (1-4): ")
             sorted_patients = system.merge_sort()
-            print("\nSorted names:")
+            print("\nSorted list:")
             for patient in sorted_patients:
                 if sort_choice == '1':
                     print(f"ID: {patient.id}")
