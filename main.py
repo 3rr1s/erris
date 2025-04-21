@@ -185,10 +185,17 @@ def main():
             print("3. Sort by Age")
             print("4. Sort by Score")
             sort_choice = input("Enter sorting choice (1-4): ")
-            sorted_patients = system.bubble_sort(sort_choice) #Fixed: pass sort_choice
+            sorted_patients = system.bubble_sort(sort_choice)
             print("\nSorted list:")
             for patient in sorted_patients:
-                print(patient)
+                if sort_choice == '1':
+                    print(f"ID: {patient.id}")
+                elif sort_choice == '2':
+                    print(f"Name: {patient.name}")
+                elif sort_choice == '3':
+                    print(f"Age: {patient.age}")
+                elif sort_choice == '4':
+                    print(f"Score: {patient.score}")
         elif choice == '5':
             print("\nSorting options:")
             print("1. Sort by ID")
@@ -196,10 +203,17 @@ def main():
             print("3. Sort by Age")
             print("4. Sort by Score")
             sort_choice = input("Enter sorting choice (1-4): ")
-            sorted_patients = system.merge_sort(sort_choice) #Fixed: pass sort_choice
+            sorted_patients = system.merge_sort(sort_choice)
             print("\nSorted list:")
             for patient in sorted_patients:
-                print(patient)
+                if sort_choice == '1':
+                    print(f"ID: {patient.id}")
+                elif sort_choice == '2':
+                    print(f"Name: {patient.name}")
+                elif sort_choice == '3':
+                    print(f"Age: {patient.age}")
+                elif sort_choice == '4':
+                    print(f"Score: {patient.score}")
         elif choice == '6':
             system.search_by_id()
         elif choice == '7':
