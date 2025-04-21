@@ -115,22 +115,20 @@ class HospitalManagementSystem:
                 filename += '.csv'
 
             with open(filename, 'r') as file:
-                reader = csv.reader(file)
-                next(reader)  # Skip header row
+                reader = csv.DictReader(file)
                 start_id = 1001
                 for row in reader:
                     try:
-                        if len(row) >= 3:  # Ensure we have at least name, age, and score
-                            id = str(start_id)
-                            name = row[0]
-                            age = int(row[1])
-                            illness = "Unknown"
-                            score = float(row[2])
+                        id = str(start_id)
+                        name = row['name']
+                        age = int(row['age'])
+                        illness = "Unknown"  # You can add 'expression' from CSV if needed
+                        score = float(row['score'])
 
-                            self.patients[id] = Patient(id, name, age, illness, score)
-                            start_id += 1
-                            print(f"Added patient: {name} (ID: {id})")
-                    except (ValueError, IndexError) as e:
+                        self.patients[id] = Patient(id, name, age, illness, score)
+                        start_id += 1
+                        print(f"Added patient: {name} (ID: {id})")
+                    except (ValueError, KeyError) as e:
                         print(f"Error processing row: {row}. Error: {e}")
                         continue
 
