@@ -113,30 +113,56 @@ class DataLoader:
 
 # CLI Interface
 class CLI:
+    def __init__(self):
+        self.patients = []
+
+    def display_menu(self):
+        print("\nHospital Patient Management System")
+        print("1. Add Patient")
+        print("2. Edit Patient")
+        print("3. View Patients")
+        print("4. Sort (Bubble Sort)")
+        print("5. Sort (Merge Sort)")
+        print("6. Search by ID")
+        print("7. Load from CSV")
+        print("8. Save to CSV")
+        print("9. Exit")
+
     def run(self):
-        print("Hospital Patient Management System - Sorting Tool")
-        file_path = input("Enter path to patient CSV file: ")
-        patients = DataLoader.load_csv(file_path)
-
-        print("Select sorting method:")
-        print("1. Bubble Sort (loop based)")
-        print("2. Merge Sort (recursion based)")
-        choice = input("Enter 1 or 2: ")
-
-        start = time.time()
-        if choice == '1':
-            sorted_patients = SortingTool.bubble_sort(patients)
-            print("Used Bubble Sort (O(n^2))")
-        else:
-            sorted_patients = SortingTool.merge_sort(patients)
-            print("Used Merge Sort (O(n log n))")
-        end = time.time()
-
-        print("\nSorted Patients:")
-        for p in sorted_patients:
-            print(p)
-
-        print(f"\nTime taken: {end - start:.6f} seconds")
+        while True:
+            self.display_menu()
+            choice = input("Enter your choice (1-9): ")
+            
+            if choice == '1':
+                print("Add Patient - Not implemented yet")
+            elif choice == '2':
+                print("Edit Patient - Not implemented yet")
+            elif choice == '3':
+                print("\nCurrent Patients:")
+                for p in self.patients:
+                    print(p)
+            elif choice == '4':
+                start = time.time()
+                self.patients = SortingTool.bubble_sort(self.patients)
+                end = time.time()
+                print(f"Sorted using Bubble Sort. Time taken: {end - start:.6f} seconds")
+            elif choice == '5':
+                start = time.time()
+                self.patients = SortingTool.merge_sort(self.patients)
+                end = time.time()
+                print(f"Sorted using Merge Sort. Time taken: {end - start:.6f} seconds")
+            elif choice == '6':
+                print("Search by ID - Not implemented yet")
+            elif choice == '7':
+                file_path = input("Enter path to CSV file: ")
+                self.patients = DataLoader.load_csv(file_path)
+            elif choice == '8':
+                print("Save to CSV - Not implemented yet")
+            elif choice == '9':
+                print("Goodbye!")
+                break
+            else:
+                print("Invalid choice. Please try again.")
 
 if __name__ == '__main__':
     CLI().run()
