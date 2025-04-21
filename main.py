@@ -50,13 +50,7 @@ class HospitalManagementSystem:
         for patient in self.patients.values():
             print(patient)
 
-    def bubble_sort(self, key='score'):
-        print("\nSorting options:")
-        print("1. Sort by ID")
-        print("2. Sort by Name")
-        print("3. Sort by Age")
-        print("4. Sort by Score")
-        sort_choice = input("Enter sorting choice (1-4): ")
+    def bubble_sort(self, sort_choice):
 
         sort_key = {
             '1': 'id',
@@ -73,13 +67,7 @@ class HospitalManagementSystem:
                     patients_list[j], patients_list[j+1] = patients_list[j+1], patients_list[j]
         return patients_list
 
-    def merge_sort(self, key='score'):
-        print("\nSorting options:")
-        print("1. Sort by ID")
-        print("2. Sort by Name")
-        print("3. Sort by Age")
-        print("4. Sort by Score")
-        sort_choice = input("Enter sorting choice (1-4): ")
+    def merge_sort(self, sort_choice):
 
         sort_key = {
             '1': 'id',
