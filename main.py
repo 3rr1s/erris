@@ -116,20 +116,23 @@ class HospitalManagementSystem:
 
             with open(filename, 'r') as file:
                 reader = csv.DictReader(file)
+                start_id = 1001
                 for row in reader:
                     try:
-                        id = row.get('id', str(len(self.patients) + 1))
-                        name = row.get('name', '')
-                        age = int(row.get('age', 0))
-                        illness = row.get('illness', '')
-                        score = float(row.get('score', 0.0))
+                        id = str(start_id)
+                        name = row['name']
+                        age = int(row['age'])
+                        illness = "Unknown"  # Since your CSV doesn't have illness
+                        score = float(row['score'])
 
                         self.patients[id] = Patient(id, name, age, illness, score)
+                        start_id += 1
+                        print(f"Added patient: {name} (ID: {id})")
                     except (ValueError, KeyError) as e:
                         print(f"Error processing row: {row}. Error: {e}")
                         continue
 
-            print("Data loaded successfully!")
+            print("\nData loaded successfully!")
         except FileNotFoundError:
             print(f"Error: File '{filename}' not found!")
         except Exception as e:
