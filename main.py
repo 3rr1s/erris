@@ -1,4 +1,3 @@
-
 import csv
 import time
 import operator
@@ -52,20 +51,48 @@ class HospitalManagementSystem:
             print(patient)
 
     def bubble_sort(self, key='score'):
+        print("\nSorting options:")
+        print("1. Sort by ID")
+        print("2. Sort by Name")
+        print("3. Sort by Age")
+        print("4. Sort by Score")
+        sort_choice = input("Enter sorting choice (1-4): ")
+
+        sort_key = {
+            '1': 'id',
+            '2': 'name',
+            '3': 'age',
+            '4': 'score'
+        }.get(sort_choice, 'score')
+
         patients_list = list(self.patients.values())
         n = len(patients_list)
         for i in range(n):
             for j in range(0, n-i-1):
-                if getattr(patients_list[j], key) > getattr(patients_list[j+1], key):
+                if str(getattr(patients_list[j], sort_key)).lower() > str(getattr(patients_list[j+1], sort_key)).lower():
                     patients_list[j], patients_list[j+1] = patients_list[j+1], patients_list[j]
         return patients_list
 
     def merge_sort(self, key='score'):
+        print("\nSorting options:")
+        print("1. Sort by ID")
+        print("2. Sort by Name")
+        print("3. Sort by Age")
+        print("4. Sort by Score")
+        sort_choice = input("Enter sorting choice (1-4): ")
+
+        sort_key = {
+            '1': 'id',
+            '2': 'name',
+            '3': 'age',
+            '4': 'score'
+        }.get(sort_choice, 'score')
+
         def merge(left, right):
             result = []
             i = j = 0
             while i < len(left) and j < len(right):
-                if getattr(left[i], key) <= getattr(right[j], key):
+                if str(getattr(left[i], sort_key)).lower() <= str(getattr(right[j], sort_key)).lower():
                     result.append(left[i])
                     i += 1
                 else:
@@ -94,37 +121,52 @@ class HospitalManagementSystem:
             print("Patient not found!")
 
     def load_from_csv(self):
-        filename = input("Enter CSV file name: ")
         try:
+            filename = input("Enter CSV file name: ")
+            if not filename.endswith('.csv'):
+                filename += '.csv'
+
             with open(filename, 'r') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    id = row['id']
-                    self.patients[id] = Patient(
-                        id=id,
-                        name=row['name'],
-                        age=int(row['age']),
-                        illness=row['illness'],
-                        score=float(row['score'])
-                    )
+                    try:
+                        id = row.get('id', str(len(self.patients) + 1))
+                        name = row.get('name', '')
+                        age = int(row.get('age', 0))
+                        illness = row.get('illness', '')
+                        score = float(row.get('score', 0.0))
+
+                        self.patients[id] = Patient(id, name, age, illness, score)
+                    except (ValueError, KeyError) as e:
+                        print(f"Error processing row: {row}. Error: {e}")
+                        continue
+
             print("Data loaded successfully!")
         except FileNotFoundError:
-            print("File not found!")
+            print(f"Error: File '{filename}' not found!")
+        except Exception as e:
+            print(f"Error loading file: {e}")
 
     def save_to_csv(self):
-        filename = input("Enter CSV file name to save: ")
-        with open(filename, 'w', newline='') as file:
-            writer = csv.DictWriter(file, fieldnames=['id', 'name', 'age', 'illness', 'score'])
-            writer.writeheader()
-            for patient in self.patients.values():
-                writer.writerow({
-                    'id': patient.id,
-                    'name': patient.name,
-                    'age': patient.age,
-                    'illness': patient.illness,
-                    'score': patient.score
-                })
-        print("Data saved successfully!")
+        try:
+            filename = input("Enter CSV file name to save: ")
+            if not filename.endswith('.csv'):
+                filename += '.csv'
+
+            with open(filename, 'w', newline='') as file:
+                writer = csv.DictWriter(file, fieldnames=['id', 'name', 'age', 'illness', 'score'])
+                writer.writeheader()
+                for patient in self.patients.values():
+                    writer.writerow({
+                        'id': patient.id,
+                        'name': patient.name,
+                        'age': patient.age,
+                        'illness': patient.illness,
+                        'score': patient.score
+                    })
+            print(f"Data saved successfully to {filename}!")
+        except Exception as e:
+            print(f"Error saving file: {e}")
 
 def main():
     system = HospitalManagementSystem()
