@@ -174,6 +174,9 @@ def main():
         print("9. Exit")
 
         choice = input("Enter your choice (1-9): ")
+        
+        continue_option = True
+        while continue_option and choice != '9':
 
         if choice == '1':
             system.add_patient()
@@ -228,6 +231,13 @@ def main():
             break
         else:
             print("Invalid choice! Please try again.")
+            
+        if choice != '9':
+            continue_choice = input("\nDo you want to continue with another operation? (y/n): ")
+            continue_option = continue_choice.lower() == 'y'
+            if not continue_option:
+                print("Thank you for using the Hospital Management System!")
+                break
 
 if __name__ == '__main__':
     main()
