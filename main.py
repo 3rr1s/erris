@@ -177,8 +177,7 @@ def main():
         
         continue_option = True
         while continue_option and choice != '9':
-
-        if choice == '1':
+            if choice == '1':
             system.add_patient()
         elif choice == '2':
             system.edit_patient()
