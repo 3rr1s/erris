@@ -1,132 +1,172 @@
-# hospital_sorting_tool.py
 
 import csv
 import time
 import operator
-import re
-from typing import List
+from typing import List, Dict
 
-# Truth evaluator class
-class TruthEvaluator:
-    OPERATORS = {
-        '\u2227': operator.and_,  # ∧
-        '\u2228': operator.or_,   # ∨
-        '\u00AC': lambda x: not x,  # ¬
-        '\u2192': lambda x, y: (not x) or y,  # →
-        '\u2194': lambda x, y: x == y  # ↔
-    }
-
-    @staticmethod
-    def evaluate(expression: str, variables: dict) -> bool:
-        expr = expression
-        for var, val in variables.items():
-            expr = expr.replace(var, str(val))
-
-        expr = expr.replace('∧', ' and ').replace('∨', ' or ').replace('¬', ' not ').replace('→', ' <= ').replace('↔', ' == ')
-        try:
-            return eval(expr)
-        except:
-            return False
-
-# Patient class
 class Patient:
-    def __init__(self, name, age, score, expression, variables):
+    def __init__(self, id: str, name: str, age: int, illness: str, score: float = 0.0):
+        self.id = id
         self.name = name
-        self.age = int(age)
-        self.score = float(score)
-        self.expression = expression
-        self.variables = {k: v == 'True' for k, v in variables.items()}
-        self.logic_result = TruthEvaluator.evaluate(expression, self.variables)
+        self.age = age
+        self.illness = illness
+        self.score = score
 
     def __str__(self):
-        return f"{self.name}, Age: {self.age}, Score: {self.score}, Expr: {self.expression}, Logic: {self.logic_result}"
+        return f"ID: {self.id}, Name: {self.name}, Age: {self.age}, Illness: {self.illness}, Score: {self.score}"
 
-# Sorting tool
-class SortingTool:
+class HospitalManagementSystem:
+    def __init__(self):
+        self.patients: Dict[str, Patient] = {}
 
-    @staticmethod
-    def bubble_sort(patients: List[Patient]) -> List[Patient]:
-        n = len(patients)
+    def add_patient(self):
+        id = input("Enter patient ID: ")
+        if id in self.patients:
+            print("Patient ID already exists!")
+            return
+        name = input("Enter patient name: ")
+        age = int(input("Enter patient age: "))
+        illness = input("Enter patient illness: ")
+        score = float(input("Enter patient score (0-10): "))
+        self.patients[id] = Patient(id, name, age, illness, score)
+        print("Patient added successfully!")
+
+    def edit_patient(self):
+        id = input("Enter patient ID to edit: ")
+        if id not in self.patients:
+            print("Patient not found!")
+            return
+        patient = self.patients[id]
+        print("Current patient details:", patient)
+        patient.name = input("Enter new name (or press enter to skip): ") or patient.name
+        patient.age = int(input("Enter new age (or press enter to skip): ") or patient.age)
+        patient.illness = input("Enter new illness (or press enter to skip): ") or patient.illness
+        patient.score = float(input("Enter new score (or press enter to skip): ") or patient.score)
+        print("Patient updated successfully!")
+
+    def view_patients(self):
+        if not self.patients:
+            print("No patients in the system!")
+            return
+        for patient in self.patients.values():
+            print(patient)
+
+    def bubble_sort(self, key='score'):
+        patients_list = list(self.patients.values())
+        n = len(patients_list)
         for i in range(n):
-            for j in range(0, n - i - 1):
-                if SortingTool.compare(patients[j], patients[j + 1]) > 0:
-                    patients[j], patients[j + 1] = patients[j + 1], patients[j]
-        return patients
+            for j in range(0, n-i-1):
+                if getattr(patients_list[j], key) > getattr(patients_list[j+1], key):
+                    patients_list[j], patients_list[j+1] = patients_list[j+1], patients_list[j]
+        return patients_list
 
-    @staticmethod
-    def merge_sort(patients: List[Patient]) -> List[Patient]:
-        if len(patients) <= 1:
-            return patients
-        mid = len(patients) // 2
-        left = SortingTool.merge_sort(patients[:mid])
-        right = SortingTool.merge_sort(patients[mid:])
-        return SortingTool.merge(left, right)
+    def merge_sort(self, key='score'):
+        def merge(left, right):
+            result = []
+            i = j = 0
+            while i < len(left) and j < len(right):
+                if getattr(left[i], key) <= getattr(right[j], key):
+                    result.append(left[i])
+                    i += 1
+                else:
+                    result.append(right[j])
+                    j += 1
+            result.extend(left[i:])
+            result.extend(right[j:])
+            return result
 
-    @staticmethod
-    def merge(left: List[Patient], right: List[Patient]) -> List[Patient]:
-        result = []
-        i = j = 0
-        while i < len(left) and j < len(right):
-            if SortingTool.compare(left[i], right[j]) <= 0:
-                result.append(left[i])
-                i += 1
-            else:
-                result.append(right[j])
-                j += 1
-        result.extend(left[i:])
-        result.extend(right[j:])
-        return result
+        def sort(arr):
+            if len(arr) <= 1:
+                return arr
+            mid = len(arr) // 2
+            left = sort(arr[:mid])
+            right = sort(arr[mid:])
+            return merge(left, right)
 
-    @staticmethod
-    def compare(p1: Patient, p2: Patient):
-        if p1.score != p2.score:
-            return -1 if p1.score > p2.score else 1
-        if p1.logic_result != p2.logic_result:
-            return -1 if p1.logic_result else 1
-        return 0
+        return sort(list(self.patients.values()))
 
-# CSV data loader
-class DataLoader:
-    @staticmethod
-    def load_csv(file_path: str) -> List[Patient]:
-        patients = []
-        with open(file_path, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                name = row['name']
-                age = row['age']
-                score = row['score']
-                expr = row['expression']
-                vars = {k: row[k] for k in row if k not in ['name', 'age', 'score', 'expression']}
-                patients.append(Patient(name, age, score, expr, vars))
-        return patients
-
-# CLI Interface
-class CLI:
-    def run(self):
-        print("Hospital Patient Management System - Sorting Tool")
-        file_path = input("Enter path to patient CSV file: ")
-        patients = DataLoader.load_csv(file_path)
-
-        print("Select sorting method:")
-        print("1. Bubble Sort (loop based)")
-        print("2. Merge Sort (recursion based)")
-        choice = input("Enter 1 or 2: ")
-
-        start = time.time()
-        if choice == '1':
-            sorted_patients = SortingTool.bubble_sort(patients)
-            print("Used Bubble Sort (O(n^2))")
+    def search_by_id(self):
+        id = input("Enter patient ID to search: ")
+        patient = self.patients.get(id)
+        if patient:
+            print(patient)
         else:
-            sorted_patients = SortingTool.merge_sort(patients)
-            print("Used Merge Sort (O(n log n))")
-        end = time.time()
+            print("Patient not found!")
 
-        print("\nSorted Patients:")
-        for p in sorted_patients:
-            print(p)
+    def load_from_csv(self):
+        filename = input("Enter CSV file name: ")
+        try:
+            with open(filename, 'r') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    id = row['id']
+                    self.patients[id] = Patient(
+                        id=id,
+                        name=row['name'],
+                        age=int(row['age']),
+                        illness=row['illness'],
+                        score=float(row['score'])
+                    )
+            print("Data loaded successfully!")
+        except FileNotFoundError:
+            print("File not found!")
 
-        print(f"\nTime taken: {end - start:.6f} seconds")
+    def save_to_csv(self):
+        filename = input("Enter CSV file name to save: ")
+        with open(filename, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=['id', 'name', 'age', 'illness', 'score'])
+            writer.writeheader()
+            for patient in self.patients.values():
+                writer.writerow({
+                    'id': patient.id,
+                    'name': patient.name,
+                    'age': patient.age,
+                    'illness': patient.illness,
+                    'score': patient.score
+                })
+        print("Data saved successfully!")
+
+def main():
+    system = HospitalManagementSystem()
+    while True:
+        print("\nHospital Patient Management System")
+        print("1. Add Patient")
+        print("2. Edit Patient")
+        print("3. View Patients")
+        print("4. Sort (Bubble Sort)")
+        print("5. Sort (Merge Sort)")
+        print("6. Search by ID")
+        print("7. Load from CSV")
+        print("8. Save to CSV")
+        print("9. Exit")
+
+        choice = input("Enter your choice (1-9): ")
+
+        if choice == '1':
+            system.add_patient()
+        elif choice == '2':
+            system.edit_patient()
+        elif choice == '3':
+            system.view_patients()
+        elif choice == '4':
+            sorted_patients = system.bubble_sort()
+            for patient in sorted_patients:
+                print(patient)
+        elif choice == '5':
+            sorted_patients = system.merge_sort()
+            for patient in sorted_patients:
+                print(patient)
+        elif choice == '6':
+            system.search_by_id()
+        elif choice == '7':
+            system.load_from_csv()
+        elif choice == '8':
+            system.save_to_csv()
+        elif choice == '9':
+            print("Thank you for using the Hospital Management System!")
+            break
+        else:
+            print("Invalid choice! Please try again.")
 
 if __name__ == '__main__':
-    CLI().run()
+    main()
