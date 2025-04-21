@@ -90,16 +90,26 @@ class DataLoader:
     @staticmethod
     def load_csv(file_path: str) -> List[Patient]:
         patients = []
-        with open(file_path, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                name = row['name']
-                age = row['age']
-                score = row['score']
-                expr = row['expression']
-                vars = {k: row[k] for k in row if k not in ['name', 'age', 'score', 'expression']}
-                patients.append(Patient(name, age, score, expr, vars))
-        return patients
+        try:
+            with open(file_path, mode='r', newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if not all(k in row for k in ['name', 'age', 'score', 'expression']):
+                        print(f"Warning: Skipping row due to missing required fields: {row}")
+                        continue
+                    name = row['name']
+                    age = row['age']
+                    score = row['score']
+                    expr = row['expression']
+                    vars = {k: row[k] for k in row if k not in ['name', 'age', 'score', 'expression']}
+                    patients.append(Patient(name, age, score, expr, vars))
+            return patients
+        except FileNotFoundError:
+            print(f"Error: File '{file_path}' not found")
+            return []
+        except Exception as e:
+            print(f"Error loading CSV: {str(e)}")
+            return []
 
 # CLI Interface
 class CLI:
