@@ -1,252 +1,132 @@
-
-# Project: Hospital Patient Management System
+# hospital_sorting_tool.py
 
 import csv
-import pandas as pd
 import time
-from abc import ABC, abstractmethod
+import operator
+import re
+from typing import List
 
+# Truth evaluator class
+class TruthEvaluator:
+    OPERATORS = {
+        '\u2227': operator.and_,  # ∧
+        '\u2228': operator.or_,   # ∨
+        '\u00AC': lambda x: not x,  # ¬
+        '\u2192': lambda x, y: (not x) or y,  # →
+        '\u2194': lambda x, y: x == y  # ↔
+    }
 
-# Abstract base class for a person
-class Person(ABC):
-    @abstractmethod
-    def __init__(self, full_name, age):
-        self.full_name = full_name
-        self.age = age
+    @staticmethod
+    def evaluate(expression: str, variables: dict) -> bool:
+        expr = expression
+        for var, val in variables.items():
+            expr = expr.replace(var, str(val))
 
+        expr = expr.replace('∧', ' and ').replace('∨', ' or ').replace('¬', ' not ').replace('→', ' <= ').replace('↔', ' == ')
+        try:
+            return eval(expr)
+        except:
+            return False
 
-# Patient class extending Person
-class Patient(Person):
-    def __init__(self, patient_id, full_name, age, diagnosis, severity, logic_expression):
-        super().__init__(full_name, age)
-        self.patient_id = patient_id
-        self.diagnosis = diagnosis
-        self.severity = severity
-        self.logic_expression = logic_expression
+# Patient class
+class Patient:
+    def __init__(self, name, age, score, expression, variables):
+        self.name = name
+        self.age = int(age)
+        self.score = float(score)
+        self.expression = expression
+        self.variables = {k: v == 'True' for k, v in variables.items()}
+        self.logic_result = TruthEvaluator.evaluate(expression, self.variables)
 
+    def __str__(self):
+        return f"{self.name}, Age: {self.age}, Score: {self.score}, Expr: {self.expression}, Logic: {self.logic_result}"
 
-# Abstract base class for sorting algorithms
-class SortingAlgorithm(ABC):
-    @abstractmethod
-    def sort(self, patients):
-        pass
+# Sorting tool
+class SortingTool:
 
-
-# Bubble Sort implementation
-class BubbleSort(SortingAlgorithm):
-    def sort(self, patients):
+    @staticmethod
+    def bubble_sort(patients: List[Patient]) -> List[Patient]:
         n = len(patients)
         for i in range(n):
             for j in range(0, n - i - 1):
-                if patients[j].severity < patients[j + 1].severity:
+                if SortingTool.compare(patients[j], patients[j + 1]) > 0:
                     patients[j], patients[j + 1] = patients[j + 1], patients[j]
         return patients
 
+    @staticmethod
+    def merge_sort(patients: List[Patient]) -> List[Patient]:
+        if len(patients) <= 1:
+            return patients
+        mid = len(patients) // 2
+        left = SortingTool.merge_sort(patients[:mid])
+        right = SortingTool.merge_sort(patients[mid:])
+        return SortingTool.merge(left, right)
 
-# Merge Sort implementation
-class MergeSort(SortingAlgorithm):
-    def sort(self, patients):
-        if len(patients) > 1:
-            mid = len(patients) // 2
-            left = self.sort(patients[:mid])
-            right = self.sort(patients[mid:])
+    @staticmethod
+    def merge(left: List[Patient], right: List[Patient]) -> List[Patient]:
+        result = []
+        i = j = 0
+        while i < len(left) and j < len(right):
+            if SortingTool.compare(left[i], right[j]) <= 0:
+                result.append(left[i])
+                i += 1
+            else:
+                result.append(right[j])
+                j += 1
+        result.extend(left[i:])
+        result.extend(right[j:])
+        return result
 
-            merged = []
-            while left and right:
-                if left[0].severity >= right[0].severity:
-                    merged.append(left.pop(0))
-                else:
-                    merged.append(right.pop(0))
-            merged.extend(left or right)
-            return merged
+    @staticmethod
+    def compare(p1: Patient, p2: Patient):
+        if p1.score != p2.score:
+            return -1 if p1.score > p2.score else 1
+        if p1.logic_result != p2.logic_result:
+            return -1 if p1.logic_result else 1
+        return 0
+
+# CSV data loader
+class DataLoader:
+    @staticmethod
+    def load_csv(file_path: str) -> List[Patient]:
+        patients = []
+        with open(file_path, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                name = row['name']
+                age = row['age']
+                score = row['score']
+                expr = row['expression']
+                vars = {k: row[k] for k in row if k not in ['name', 'age', 'score', 'expression']}
+                patients.append(Patient(name, age, score, expr, vars))
         return patients
 
+# CLI Interface
+class CLI:
+    def run(self):
+        print("Hospital Patient Management System - Sorting Tool")
+        file_path = input("Enter path to patient CSV file: ")
+        patients = DataLoader.load_csv(file_path)
 
-# Main Hospital System Class
-class HospitalSystem:
-    def __init__(self):
-        self.patients = {}
-        self.logic_by_severity = {
-            range(1, 4): "p and not q",
-            range(4, 7): "not p or q",
-            range(7, 9): "p and (q or r)",
-            range(9, 11): "p and r"
-        }
+        print("Select sorting method:")
+        print("1. Bubble Sort (loop based)")
+        print("2. Merge Sort (recursion based)")
+        choice = input("Enter 1 or 2: ")
 
-    def generate_logic(self, severity):
-        for level_range, expr in self.logic_by_severity.items():
-            if int(severity) in level_range:
-                return expr
-        return "p"
-
-    def add_patient(self):
-        patient_id = input("Enter unique Patient ID: ").strip().lower()
-        if patient_id in self.patients:
-            print("This ID is already taken. Please use 'Edit' to change details.")
-            return
-
-        name = input("Full Name: ").strip()
-        try:
-            age = int(input("Age: ").strip())
-        except ValueError:
-            print("Invalid age entered.")
-            return
-
-        diagnosis = input("Diagnosis (e.g. flu, fracture, etc.): ").strip()
-
-        try:
-            severity = float(input("Severity (1-10): ").strip())
-            if not 1 <= severity <= 10:
-                raise ValueError
-        except ValueError:
-            print("Invalid severity. Must be a number from 1 to 10.")
-            return
-
-        logic = self.generate_logic(severity)
-        self.patients[patient_id] = Patient(patient_id, name, age, diagnosis, severity, logic)
-        print("✅ Patient added successfully.")
-
-    def edit_patient(self):
-        patient_id = input("Enter Patient ID to edit: ").strip().lower()
-        if patient_id not in self.patients:
-            print("❌ Patient not found.")
-            return
-
-        patient = self.patients[patient_id]
-        print(f"\nEditing: {patient.full_name} | Age: {patient.age} | Diagnosis: {patient.diagnosis} | Severity: {patient.severity}")
-
-        name = input("New Name (Leave empty to keep same): ").strip() or patient.full_name
-        age_input = input("New Age (Leave empty to keep same): ").strip()
-        age = int(age_input) if age_input else patient.age
-        diagnosis = input("New Diagnosis (Leave empty to keep same): ").strip() or patient.diagnosis
-
-        severity_input = input("New Severity (1-10, leave blank to keep same): ").strip()
-        if severity_input:
-            try:
-                severity = float(severity_input)
-                if not 1 <= severity <= 10:
-                    raise ValueError
-            except ValueError:
-                print("Invalid severity. Update skipped.")
-                severity = patient.severity
-        else:
-            severity = patient.severity
-
-        logic = self.generate_logic(severity)
-        self.patients[patient_id] = Patient(patient_id, name, age, diagnosis, severity, logic)
-        print("✅ Patient updated successfully.")
-
-    def display_patients(self):
-        if not self.patients:
-            print("⚠️ No patients in the system.")
-            return
-        print("\n--- Patient List ---")
-        for p in self.patients.values():
-            print(f"ID: {p.patient_id} | Name: {p.full_name} | Age: {p.age} | Diagnosis: {p.diagnosis} | Severity: {p.severity} | Logic: {p.logic_expression}")
-
-    def search_patient(self, patient_id):
-        patient_id = patient_id.strip().lower()
-        patient = self.patients.get(patient_id)
-        if patient:
-            print(f"🔍 Found Patient - ID: {patient.patient_id} | Name: {patient.full_name} | Age: {patient.age} | Diagnosis: {patient.diagnosis} | Severity: {patient.severity}")
-        else:
-            print("❌ Patient not found.")
-
-    def evaluate_logic(self, expression):
-        variables = {"p": True, "q": False, "r": True, "s": False}
-        try:
-            return eval(expression, {}, variables)
-        except Exception as e:
-            print(f"Error in logic expression '{expression}': {e}")
-            return False
-
-    def sort_patients(self, sorting_algorithm):
-        patient_list = list(self.patients.values())
         start = time.time()
-        sorted_patients = sorting_algorithm.sort(patient_list)
-        duration = time.time() - start
-
-        print(f"\n✅ Sorting complete in {duration:.4f} seconds.")
-        for p in sorted_patients:
-            print(f"{p.full_name} | Severity: {p.severity} | Logic: {p.logic_expression}")
-
-    def load_csv(self, file_name):
-        try:
-            df = pd.read_csv(file_name)
-            for _, row in df.iterrows():
-                patient_id = row['PatientID'].strip().lower()
-                severity = float(row['Severity'])
-                logic = self.generate_logic(severity)
-
-                self.patients[patient_id] = Patient(
-                    patient_id,
-                    row['Name'],
-                    int(row['Age']),
-                    row['Diagnosis'],
-                    severity,
-                    logic
-                )
-            print("📂 Patients loaded from CSV successfully.")
-        except Exception as e:
-            print(f"❌ Failed to load CSV: {e}")
-
-    def save_csv(self, file_name="patients.csv"):
-        try:
-            with open(file_name, mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(['PatientID', 'Name', 'Age', 'Diagnosis', 'Severity', 'Logic'])
-                for p in self.patients.values():
-                    writer.writerow([p.patient_id, p.full_name, p.age, p.diagnosis, p.severity, p.logic_expression])
-            print(f"💾 Data saved to {file_name}")
-        except Exception as e:
-            print(f"❌ Error saving CSV: {e}")
-
-
-# Driver code
-def main():
-    system = HospitalSystem()
-    bubble = BubbleSort()
-    merge = MergeSort()
-
-    while True:
-        print("\n--- 🏥 Hospital Patient Management Menu ---")
-        print("1. Add Patient")
-        print("2. Edit Patient")
-        print("3. View Patients")
-        print("4. Sort (Bubble Sort)")
-        print("5. Sort (Merge Sort)")
-        print("6. Search by ID")
-        print("7. Load from CSV")
-        print("8. Save to CSV")
-        print("9. Exit")
-
-        choice = input("Your choice: ").strip()
-
         if choice == '1':
-            system.add_patient()
-        elif choice == '2':
-            system.edit_patient()
-        elif choice == '3':
-            system.display_patients()
-        elif choice == '4':
-            system.sort_patients(bubble)
-        elif choice == '5':
-            system.sort_patients(merge)
-        elif choice == '6':
-            pid = input("Enter Patient ID: ")
-            system.search_patient(pid)
-        elif choice == '7':
-            fname = input("Filename (default: patients.csv): ").strip() or "patients.csv"
-            system.load_csv(fname)
-        elif choice == '8':
-            fname = input("Filename to save (default: patients.csv): ").strip() or "patients.csv"
-            system.save_csv(fname)
-        elif choice == '9':
-            print("👋 Goodbye!")
-            break
+            sorted_patients = SortingTool.bubble_sort(patients)
+            print("Used Bubble Sort (O(n^2))")
         else:
-            print("❗ Invalid choice. Try again.")
+            sorted_patients = SortingTool.merge_sort(patients)
+            print("Used Merge Sort (O(n log n))")
+        end = time.time()
 
+        print("\nSorted Patients:")
+        for p in sorted_patients:
+            print(p)
 
-if __name__ == "__main__":
-    main()
+        print(f"\nTime taken: {end - start:.6f} seconds")
+
+if __name__ == '__main__':
+    CLI().run()
