@@ -56,3 +56,13 @@ class MergeSort(SortingStrategy):
             result.extend(left[i:])
             result.extend(right[j:])
             return result
+
+def recursive_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left = recursive_sort(arr[:mid])
+    right = recursive_sort(arr[mid:])
+    return merge(left, right)
+
+return recursive_sort(data)
