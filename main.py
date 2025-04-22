@@ -16,3 +16,15 @@ class Patient:
 
     def __str__(self):
         return f"ID: {self.id}, Name: {self.name}, Age: {self.age}, Illness: {self.illness}, Score: {self.score}, Logic: {self.logic_expr}"
+        
+        def evaluate_logic(self):
+            expr = self.logic_expr.replace("age", str(self.age)).replace("score", str(self.score))
+            expr = expr.replace("∧", "and").replace("∨", "or").replace("¬", "not ").replace("→", "<=").replace("⇔", "==")
+            try:
+                return eval(expr)
+            except Exception as e:
+                return False
+
+        # --------------------------
+        # Sorting Strategy (OOP Add)
+        # --------------------------
