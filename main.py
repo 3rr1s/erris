@@ -105,3 +105,10 @@ def edit_patient(self):
         return
 
     patient = self.patients[id]
+
+print(f"Editing Patient: {patient}")
+name = input(f"Enter new name (leave blank to keep '{patient.name}'): ") or patient.name
+age = input(f"Enter new age (leave blank to keep '{patient.age}'): ") or patient.age
+illness = input(f"Enter new illness (leave blank to keep '{patient.illness}'): ") or patient.illness
+score = input(f"Enter new score (leave blank to keep '{patient.score}'): ") or patient.score
+logic_expr = input(f"Enter new logical expression (leave blank to keep '{patient.logic_expr}'): ") or patient.logic_expr
