@@ -91,3 +91,9 @@ def view_patients(self, key: str = None):
     if not self.patients:
         print("No patients in the system!")
         return
+
+for patient in self.patients.values():
+    if key:
+        print(getattr(patient, key))
+    else:
+        print(patient)
