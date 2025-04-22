@@ -112,3 +112,10 @@ age = input(f"Enter new age (leave blank to keep '{patient.age}'): ") or patient
 illness = input(f"Enter new illness (leave blank to keep '{patient.illness}'): ") or patient.illness
 score = input(f"Enter new score (leave blank to keep '{patient.score}'): ") or patient.score
 logic_expr = input(f"Enter new logical expression (leave blank to keep '{patient.logic_expr}'): ") or patient.logic_expr
+
+# Update patient details
+patient.name = name
+patient.age = int(age)
+patient.illness = illness
+patient.score = float(score)
+patient.logic_expr = logic_expr
