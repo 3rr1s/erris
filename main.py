@@ -28,3 +28,6 @@ class Patient:
         # --------------------------
         # Sorting Strategy (OOP Add)
         # --------------------------
+        class SortingStrategy:
+            def sort(self, data: List[Patient], key: str):
+                raise NotImplementedError("This method should be overridden.")
