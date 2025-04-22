@@ -141,3 +141,8 @@ start_time = time.time()
 sorted_data = strategy.sort(list(self.patients.values()), key)
 
 sorted_data.sort(key=lambda p: not p.evaluate_logic())  # True values come first
+
+self.view_patients(key)
+
+end_time = time.time()
+print(f"Sorting took {round(end_time - start_time, 4)} seconds.")
