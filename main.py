@@ -122,3 +122,10 @@ patient.logic_expr = logic_expr
 
 print("Patient updated successfully!")
 
+def sort_patients(self, algorithm: str):
+    key_map = {
+        '1': 'id',
+        '2': 'name',
+        '3': 'age',
+        '4': 'score'
+    }
