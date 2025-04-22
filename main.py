@@ -31,3 +31,12 @@ class Patient:
         class SortingStrategy:
             def sort(self, data: List[Patient], key: str):
                 raise NotImplementedError("This method should be overridden.")
+
+class BubbleSort(SortingStrategy):
+    def sort(self, data: List[Patient], key: str):
+        n = len(data)
+        for i in range(n):
+            for j in range(0, n - i - 1):
+                if str(getattr(data[j], key)).lower() > str(getattr(data[j + 1], key)).lower():
+                    data[j], data[j + 1] = data[j + 1], data[j]
+        return data
