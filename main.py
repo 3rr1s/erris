@@ -202,3 +202,25 @@ def main():
         print("7. Save to CSV")
         print("8. Exit")
         choice = input("Choose option: ")
+
+        if choice == '1':
+            system.add_patient()
+        elif choice == '2':
+            system.view_patients()
+        elif choice == '3':
+            system.edit_patient()
+        elif choice == '4':
+            system.sort_patients('bubble')
+        elif choice == '5':
+            system.sort_patients('merge')
+        elif choice == '6':
+            system.load_from_csv()
+        elif choice == '7':
+            system.save_to_csv()
+        elif choice == '8':
+            break
+        else:
+            print("Invalid choice.")
+
+if __name__ == '__main__':
+main()
