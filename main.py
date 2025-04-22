@@ -166,3 +166,22 @@ def load_from_csv(self):
         print("Patients loaded successfully from CSV.")
     except FileNotFoundError:
         print("File not found. Please ensure 'hospital_patients.csv' is in the working directory.")
+
+def save_to_csv(self):
+    filename = "hospital_patients.csv"
+    try:
+        with open(filename, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=['id', 'name', 'age', 'illness', 'score', 'logic_expr'])
+            writer.writeheader()
+            for patient in self.patients.values():
+                writer.writerow({
+                    'id': patient.id,
+                    'name': patient.name,
+                    'age': patient.age,
+                    'illness': patient.illness,
+                    'score': patient.score,
+                    'logic_expr': patient.logic_expr
+                })
+        print(f"Patient data successfully saved to {filename}.")
+    except Exception as e:
+        print(f"Error saving to CSV: {e}")
