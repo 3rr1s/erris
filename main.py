@@ -146,3 +146,23 @@ self.view_patients(key)
 
 end_time = time.time()
 print(f"Sorting took {round(end_time - start_time, 4)} seconds.")
+
+def load_from_csv(self):
+    try:
+        filename = "hospital_patients.csv"
+        with open(filename, 'r') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                try:
+                    id = row['id']
+                    name = row['name']
+                    age = int(row['age'])
+                    score = float(row['score'])
+                    illness = row.get('illness', "Unknown")
+                    logic_expr = row.get('logic_expr', "")
+                    self.patients[id] = Patient(id, name, age, illness, score, logic_expr)
+                except Exception as e:
+                    print(f"Error processing row: {row}. {e}")
+        print("Patients loaded successfully from CSV.")
+    except FileNotFoundError:
+        print("File not found. Please ensure 'hospital_patients.csv' is in the working directory.")
