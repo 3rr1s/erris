@@ -119,3 +119,6 @@ patient.age = int(age)
 patient.illness = illness
 patient.score = float(score)
 patient.logic_expr = logic_expr
+
+print("Patient updated successfully!")
+
