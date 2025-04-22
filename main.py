@@ -40,3 +40,19 @@ class BubbleSort(SortingStrategy):
                 if str(getattr(data[j], key)).lower() > str(getattr(data[j + 1], key)).lower():
                     data[j], data[j + 1] = data[j + 1], data[j]
         return data
+
+class MergeSort(SortingStrategy):
+    def sort(self, data: List[Patient], key: str):
+        def merge(left, right):
+            result = []
+            i = j = 0
+            while i < len(left) and j < len(right):
+                if str(getattr(left[i], key)).lower() <= str(getattr(right[j], key)).lower():
+                    result.append(left[i])
+                    i += 1
+                else:
+                    result.append(right[j])
+                    j += 1
+            result.extend(left[i:])
+            result.extend(right[j:])
+            return result
