@@ -73,3 +73,16 @@ return recursive_sort(data)
 class HospitalManagementSystem:
     def __init__(self):
         self.patients: Dict[str, Patient] = {}
+
+def add_patient(self):
+    id = input("Enter patient ID: ")
+    if id in self.patients:
+        print("Patient ID already exists!")
+        return
+    name = input("Enter patient name: ")
+    age = int(input("Enter patient age: "))
+    illness = input("Enter patient illness: ")
+    score = float(input("Enter patient score (0-10): "))
+    logic_expr = input("Enter logical expression (e.g., 'age > 50 ∧ score > 7'): ")
+    self.patients[id] = Patient(id, name, age, illness, score, logic_expr)
+    print("Patient added successfully!")
