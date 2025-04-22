@@ -185,3 +185,20 @@ def save_to_csv(self):
         print(f"Patient data successfully saved to {filename}.")
     except Exception as e:
         print(f"Error saving to CSV: {e}")
+
+# --------------------------
+# Main Menu
+# --------------------------
+def main():
+    system = HospitalManagementSystem()
+    while True:
+        print("\nHospital Management System")
+        print("1. Add Patient")
+        print("2. View Patients")
+        print("3. Edit Patient")
+        print("4. Sort (Bubble Sort)")
+        print("5. Sort (Merge Sort)")
+        print("6. Load from CSV")
+        print("7. Save to CSV")
+        print("8. Exit")
+        choice = input("Choose option: ")
