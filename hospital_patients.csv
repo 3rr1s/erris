@@ -1,5 +1,2 @@
-
-name,age,score,expression,fever,cough
-John,45,8.5,fever ∧ cough,True,True
-Alice,32,7.2,fever ∨ cough,False,True
-Bob,58,9.1,¬fever,True,False
+id,name,age,illness,score,logic_expr
+1001,erris,19,covid,5.0,8
