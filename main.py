@@ -97,3 +97,11 @@ for patient in self.patients.values():
         print(getattr(patient, key))
     else:
         print(patient)
+
+def edit_patient(self):
+    id = input("Enter the ID of the patient to edit: ")
+    if id not in self.patients:
+        print("Patient not found.")
+        return
+
+    patient = self.patients[id]
