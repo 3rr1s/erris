@@ -66,3 +66,10 @@ def recursive_sort(arr):
     return merge(left, right)
 
 return recursive_sort(data)
+
+# --------------------------
+# Main Management System
+# --------------------------
+class HospitalManagementSystem:
+    def __init__(self):
+        self.patients: Dict[str, Patient] = {}
