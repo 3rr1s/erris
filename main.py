@@ -129,3 +129,15 @@ def sort_patients(self, algorithm: str):
         '3': 'age',
         '4': 'score'
     }
+
+print("\nSorting Options:\n1. ID\n2. Name\n3. Age\n4. Score")
+key_choice = input("Choose primary sort key (1-4): ")
+key = key_map.get(key_choice, 'score')
+
+strategy = BubbleSort() if algorithm == 'bubble' else MergeSort()
+
+print("Sorting... (Primary + Logical Expression Evaluation)")
+start_time = time.time()
+sorted_data = strategy.sort(list(self.patients.values()), key)
+
+sorted_data.sort(key=lambda p: not p.evaluate_logic())  # True values come first
