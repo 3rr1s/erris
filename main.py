@@ -86,3 +86,8 @@ def add_patient(self):
     logic_expr = input("Enter logical expression (e.g., 'age > 50 ∧ score > 7'): ")
     self.patients[id] = Patient(id, name, age, illness, score, logic_expr)
     print("Patient added successfully!")
+
+def view_patients(self, key: str = None):
+    if not self.patients:
+        print("No patients in the system!")
+        return
