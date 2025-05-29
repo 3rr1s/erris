@@ -95,10 +95,13 @@ class HospitalManagementSystem:
         # Validate age input
         while True:
             age_input = input("Enter patient age: ")
+            if len(age_input) > 3:
+                print("Age cannot be more than 3 digits. Please enter a valid age.")
+                continue
             try:
                 age = int(age_input)
-                if age < 0 or age > 150:
-                    print("Age must be between 0 and 150. Please try again.")
+                if age < 0 or age > 999:
+                    print("Age must be between 0 and 999. Please try again.")
                     continue
                 break
             except ValueError:
@@ -149,10 +152,13 @@ class HospitalManagementSystem:
             if not age_input:  # Keep existing age if blank
                 age = patient.age
                 break
+            if len(age_input) > 3:
+                print("Age cannot be more than 3 digits. Please enter a valid age.")
+                continue
             try:
                 age = int(age_input)
-                if age < 0 or age > 150:
-                    print("Age must be between 0 and 150. Please try again.")
+                if age < 0 or age > 999:
+                    print("Age must be between 0 and 999. Please try again.")
                     continue
                 break
             except ValueError:
