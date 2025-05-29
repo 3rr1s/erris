@@ -67,11 +67,30 @@ class HospitalManagementSystem:
         self.patients: Dict[str, Patient] = {}
 
     def add_patient(self):
-        id = input("Enter patient ID: ")
-        if id in self.patients:
-            print("Patient ID already exists!")
-            return
-        name = input("Enter patient name: ")
+        # Validate patient ID input
+        while True:
+            id = input("Enter patient ID: ")
+            if not id.strip():
+                print("Patient ID cannot be empty. Please try again.")
+                continue
+            if any(char in id for char in "@+*#$%^&()[]{}|\\:;\"'<>?/.,`~"):
+                print("Patient ID cannot contain special characters like @+*#. Only letters, numbers, hyphens, and underscores are allowed.")
+                continue
+            if id in self.patients:
+                print("Patient ID already exists!")
+                continue
+            break
+        
+        # Validate patient name input
+        while True:
+            name = input("Enter patient name: ")
+            if not name.strip():
+                print("Patient name cannot be empty. Please try again.")
+                continue
+            if any(char in name for char in "@+*#$%^&()[]{}|\\:;\"'<>?/.,`~0123456789"):
+                print("Patient name cannot contain special characters or numbers like @+*#. Only letters and spaces are allowed.")
+                continue
+            break
 
         # Validate age input
         while True:
@@ -99,14 +118,79 @@ class HospitalManagementSystem:
             except ValueError:
                 print("Invalid input. Score must be a number. Special characters like @+*# are not allowed.")
 
+        logic_expr = input("Enter logical expression (e.g., 'age > 50 ∧ score > 7'): ")
+        self.patients[id] = Patient(id, name, age, illness, score, logic_expr)
+        print("Patient added successfully!")
+
+    def edit_patient(self):
+        id = input("Enter patient ID to edit: ")
+        if id not in self.patients:
+            print("Patient not found!")
+            return
+        
+        patient = self.patients[id]
+        print(f"Editing Patient: {patient}")
+        
+        # Validate patient name input
+        while True:
+            name_input = input(f"Enter new name (leave blank to keep '{patient.name}'): ")
+            if not name_input:  # Keep existing name if blank
+                name = patient.name
+                break
+            if any(char in name_input for char in "@+*#$%^&()[]{}|\\:;\"'<>?/.,`~0123456789"):
+                print("Patient name cannot contain special characters or numbers like @+*#. Only letters and spaces are allowed.")
+                continue
+            name = name_input
+            break
+        
+        # Validate age input
+        while True:
+            age_input = input(f"Enter new age (leave blank to keep '{patient.age}'): ")
+            if not age_input:  # Keep existing age if blank
+                age = patient.age
+                break
+            try:
+                age = int(age_input)
+                if age < 0 or age > 150:
+                    print("Age must be between 0 and 150. Please try again.")
+                    continue
+                break
+            except ValueError:
+                print("Invalid input. Age must be a number. Special characters like @+*# are not allowed.")
+        
+        illness = input(f"Enter new illness (leave blank to keep '{patient.illness}'): ") or patient.illness
+        
+        # Validate score input
+        while True:
+            score_input = input(f"Enter new score (leave blank to keep '{patient.score}'): ")
+            if not score_input:  # Keep existing score if blank
+                score = patient.score
+                break
+            try:
+                score = float(score_input)
+                if score < 0 or score > 10:
+                    print("Score must be between 0 and 10. Please try again.")
+                    continue
+                break
+            except ValueError:
+                print("Invalid input. Score must be a number. Special characters like @+*# are not allowed.")
+        
         logic_expr = input(f"Enter new logical expression (leave blank to keep '{patient.logic_expr}'): ") or patient.logic_expr
 
         patient.name = name
-        patient.age = int(age)
+        patient.age = age
         patient.illness = illness
-        patient.score = float(score)
+        patient.score = score
         patient.logic_expr = logic_expr
         print("Patient updated successfully!")
+
+    def view_patients(self, sort_key=None):
+        if not self.patients:
+            print("No patients found.")
+            return
+        print("\nPatient List:")
+        for patient in self.patients.values():
+            print(patient)
 
     def sort_patients(self, algorithm: str):
         key_map = {
