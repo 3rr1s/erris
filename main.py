@@ -72,36 +72,33 @@ class HospitalManagementSystem:
             print("Patient ID already exists!")
             return
         name = input("Enter patient name: ")
-        age = int(input("Enter patient age: "))
+
+        # Validate age input
+        while True:
+            age_input = input("Enter patient age: ")
+            try:
+                age = int(age_input)
+                if age < 0 or age > 150:
+                    print("Age must be between 0 and 150. Please try again.")
+                    continue
+                break
+            except ValueError:
+                print("Invalid input. Age must be a number. Special characters like @+*# are not allowed.")
+
         illness = input("Enter patient illness: ")
-        score = float(input("Enter patient score (0-10): "))
-        logic_expr = input("Enter logical expression (e.g., 'age > 50 ∧ score > 7'): ")
-        self.patients[id] = Patient(id, name, age, illness, score, logic_expr)
-        print("Patient added successfully!")
 
-    def view_patients(self, key: str = None):
-        if not self.patients:
-            print("No patients in the system!")
-            return
-        
-        for patient in self.patients.values():
-            if key:
-                print(getattr(patient, key))
-            else:
-                print(patient)
+        # Validate score input
+        while True:
+            score_input = input("Enter patient score (0-10): ")
+            try:
+                score = float(score_input)
+                if score < 0 or score > 10:
+                    print("Score must be between 0 and 10. Please try again.")
+                    continue
+                break
+            except ValueError:
+                print("Invalid input. Score must be a number. Special characters like @+*# are not allowed.")
 
-    def edit_patient(self):
-        id = input("Enter the ID of the patient to edit: ")
-        if id not in self.patients:
-            print("Patient not found.")
-            return
-
-        patient = self.patients[id]
-        print(f"Editing Patient: {patient}")
-        name = input(f"Enter new name (leave blank to keep '{patient.name}'): ") or patient.name
-        age = input(f"Enter new age (leave blank to keep '{patient.age}'): ") or patient.age
-        illness = input(f"Enter new illness (leave blank to keep '{patient.illness}'): ") or patient.illness
-        score = input(f"Enter new score (leave blank to keep '{patient.score}'): ") or patient.score
         logic_expr = input(f"Enter new logical expression (leave blank to keep '{patient.logic_expr}'): ") or patient.logic_expr
 
         patient.name = name
