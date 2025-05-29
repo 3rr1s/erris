@@ -107,7 +107,16 @@ class HospitalManagementSystem:
             except ValueError:
                 print("Invalid input. Age must be a number. Special characters like @+*# are not allowed.")
 
-        illness = input("Enter patient illness: ")
+        # Validate illness input
+        while True:
+            illness = input("Enter patient illness: ")
+            if not illness.strip():
+                print("Patient illness cannot be empty. Please try again.")
+                continue
+            if any(char in illness for char in "@+*#$%^&()[]{}|\\:;\"'<>?/.,`~0123456789"):
+                print("Patient illness cannot contain special characters or numbers like @+*#. Only letters and spaces are allowed.")
+                continue
+            break
 
         # Validate score input
         while True:
@@ -164,8 +173,18 @@ class HospitalManagementSystem:
             except ValueError:
                 print("Invalid input. Age must be a number. Special characters like @+*# are not allowed.")
         
-        illness = input(f"Enter new illness (leave blank to keep '{patient.illness}'): ") or patient.illness
-        
+        # Validate illness input
+        while True:
+            illness_input = input(f"Enter new illness (leave blank to keep '{patient.illness}'): ")
+            if not illness_input:  # Keep existing illness if blank
+                illness = patient.illness
+                break
+            if any(char in illness_input for char in "@+*#$%^&()[]{}|\\:;\"'<>?/.,`~0123456789"):
+                print("Patient illness cannot contain special characters or numbers like @+*#. Only letters and spaces are allowed.")
+                continue
+            illness = illness_input
+            break
+
         # Validate score input
         while True:
             score_input = input(f"Enter new score (leave blank to keep '{patient.score}'): ")
