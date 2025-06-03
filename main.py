@@ -184,7 +184,7 @@ class HospitalManagementSystem:
                 continue
             illness = illness_input
             break
-
+        
         # Validate score input
         while True:
             score_input = input(f"Enter new score (leave blank to keep '{patient.score}'): ")
